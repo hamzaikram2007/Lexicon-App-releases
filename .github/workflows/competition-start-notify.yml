@@ -1,0 +1,34 @@
+name: Notify on competition start
+
+# Runs every 10 minutes and checks Firestore for any scheduled competition
+# whose start time has just arrived, sending the in-app announcement + FCM
+# push automatically. See scripts/notify-competition-start.js for the full
+# explanation of why this exists (Spark plan has no Cloud Functions, so
+# this replaces that missing scheduled-trigger capability using GitHub
+# Actions instead — genuinely free for a public repo).
+#
+# One-time setup required: add a repository secret named
+# FIREBASE_SERVICE_ACCOUNT_JSON containing the full contents of a Firebase
+# service account key (Firebase Console → Project Settings → Service
+# Accounts → Generate new private key).
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {} # lets you trigger a run manually from the Actions tab, useful for testing
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        working-directory: scripts
+        run: npm install
+      - name: Run notifier
+        working-directory: scripts
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node notify-competition-start.js
