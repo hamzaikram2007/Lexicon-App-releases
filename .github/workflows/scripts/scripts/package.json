@@ -1,9 +1,0 @@
-{
-  "name": "lexivault-scripts",
-  "private": true,
-  "version": "1.0.0",
-  "description": "Scheduled maintenance scripts run via GitHub Actions, not part of the app bundle.",
-  "dependencies": {
-    "firebase-admin": "^12.0.0"
-  }
-}
